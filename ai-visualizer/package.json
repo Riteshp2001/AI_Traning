@@ -1,0 +1,51 @@
+{
+  "name": "ai-visualizer",
+  "version": "0.1.0",
+  "description": "A real-time AI Spam Detection Dashboard illustrating Various AI Models Traning Data.",
+  "private": true,
+  "type": "module",
+  "author": "Raji Group",
+  "license": "MIT",
+  "keywords": [
+    "nextjs",
+    "react",
+    "ai",
+    "spam-detection",
+    "dashboard",
+    "tailwindcss"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n \"NEXT,API\" -c \"cyan,magenta\" \"next dev\" \"cd ../backend && uvicorn main:app --reload\"",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.26",
+    "lucide-react": "^0.560.0",
+    "next": "16.0.8",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "recharts": "^3.5.1",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.8",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
