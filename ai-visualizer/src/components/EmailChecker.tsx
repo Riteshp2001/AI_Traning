@@ -2,23 +2,61 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { Search, CheckCircle, AlertTriangle, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { checkSpam } from "@/lib/api";
+
+const PRE_TYPED_EMAILS = [
+  {
+    label: "Spam: Lottery",
+    text: "CONGRATULATIONS! You have won $1,000,000 in the detector lottery. Call now to claim your prize! This is not a drill.",
+    type: "spam",
+  },
+  {
+    label: "Spam: Urgent",
+    text: "URGENT: Your account has been compromised. Click this link immediately to reset your password or your account will be deleted.",
+    type: "spam",
+    warning: true,
+  },
+  {
+    label: "Ham: Meeting",
+    text: "Hi team, just a reminder about our meeting tomorrow at 10 AM. Please review the attached documents before we start.",
+    type: "ham",
+  },
+  {
+    label: "Ham: Hello",
+    text: "Hey, how are you doing? It's been a while since we last caught up. Let's grab coffee soon.",
+    type: "ham",
+    warning: true,
+  },
+  {
+    label: "Spam: Promo",
+    text: "Exclusive Offer: Buy one get one free for a limited time only! Click here to shop now.",
+    type: "spam",
+  },
+  {
+    label: "Ham: Project",
+    text: "Project Update: the deployment was successful. All systems are green. Thanks for your hard work.",
+    type: "ham",
+  },
+];
 
 export function EmailChecker() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showJson, setShowJson] = useState(false);
   const [result, setResult] = useState<{
     isSpam: boolean;
     confidence: number;
     message?: string;
+    rawData?: any;
   } | null>(null);
 
   const handleCheck = async () => {
     if (!text) return;
     setLoading(true);
     setResult(null);
+    setShowJson(false);
 
     console.log(
       "%c 📨 Analyzing Email Content ",
@@ -40,6 +78,7 @@ export function EmailChecker() {
       isSpam: apiResult.is_spam,
       confidence: apiResult.confidence,
       message: apiResult.message,
+      rawData: apiResult,
     };
 
     setResult(mappedResult);
@@ -60,6 +99,28 @@ export function EmailChecker() {
           placeholder="Paste email content here to analyze..."
           className="w-full h-32 bg-black/20 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 transition-colors resize-none"
         />
+
+        <div className="flex flex-wrap gap-2">
+          {PRE_TYPED_EMAILS.map((email) => (
+            <button
+              key={email.label}
+              onClick={() => setText(email.text)}
+              className={cn(
+                "px-3 py-1.5 rounded-full text-xs font-medium border transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5",
+                // @ts-ignore
+                email.warning
+                  ? "border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10"
+                  : email.type === "spam"
+                  ? "border-red-500/20 text-red-500/70 hover:bg-red-500/10 hover:border-red-500/40"
+                  : "border-green-500/20 text-green-500/70 hover:bg-green-500/10 hover:border-green-500/40"
+              )}
+            >
+              {/* @ts-ignore */}
+              {email.warning && <AlertTriangle className="w-3 h-3" />}
+              {email.label}
+            </button>
+          ))}
+        </div>
 
         <div className="flex justify-between items-center">
           <button
@@ -142,6 +203,36 @@ export function EmailChecker() {
                   {result.message}
                 </div>
               )}
+
+              {/* Raw Data Collapsible */}
+              <div className="mt-3 border-t border-white/10 pt-2">
+                <button
+                  onClick={() => setShowJson(!showJson)}
+                  className="flex items-center gap-1 text-xs font-medium opacity-60 hover:opacity-100 transition-opacity"
+                >
+                  {showJson ? (
+                    <ChevronUp className="w-3 h-3" />
+                  ) : (
+                    <ChevronDown className="w-3 h-3" />
+                  )}
+                  View API Response
+                </button>
+
+                <AnimatePresence>
+                  {showJson && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <pre className="mt-2 p-2 rounded bg-black/30 text-[10px] font-mono whitespace-pre-wrap break-all text-white/70 overflow-x-auto max-h-40 overflow-y-auto custom-scrollbar">
+                        {JSON.stringify(result.rawData, null, 2)}
+                      </pre>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </motion.div>
         )}
