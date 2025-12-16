@@ -45,10 +45,12 @@ export function EmailChecker() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [showJson, setShowJson] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("svc");
   const [result, setResult] = useState<{
     isSpam: boolean;
     confidence: number;
     message?: string;
+    model_used?: string;
     rawData?: any;
   } | null>(null);
 
@@ -63,8 +65,9 @@ export function EmailChecker() {
       "background: #3b82f6; color: white; padding: 4px; border-radius: 4px; font-weight: bold;"
     );
     console.log("Input Text:", text);
+    console.log("Selected Model:", selectedModel);
 
-    const apiResult = await checkSpam(text);
+    const apiResult = await checkSpam(text, selectedModel);
 
     console.log(
       "%c 🤖 Prediction Result ",
@@ -78,6 +81,7 @@ export function EmailChecker() {
       isSpam: apiResult.is_spam,
       confidence: apiResult.confidence,
       message: apiResult.message,
+      model_used: apiResult.model_used,
       rawData: apiResult,
     };
 
@@ -122,31 +126,47 @@ export function EmailChecker() {
           ))}
         </div>
 
-        <div className="flex justify-between items-center">
-          <button
-            onClick={handleCheck}
-            disabled={loading || !text}
-            className={cn(
-              "px-6 py-2 rounded-lg bg-blue-600 text-white font-medium shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-500 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2",
-              loading && "opacity-80"
-            )}
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              "Analyze Text"
-            )}
-          </button>
+        <div className="flex flex-col sm:flex-row justify-between items-center bg-white/5 p-3 rounded-xl gap-3">
+             <div className="flex items-center gap-2 w-full sm:w-auto">
+                <span className="text-sm text-gray-400 whitespace-nowrap">Model:</span>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="w-full sm:w-auto bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer appearance-none hover:bg-black/60 transition-colors"
+                  style={{ backgroundImage: 'none' }} // Remove default arrow in some browsers if we want custom, but standard is fine
+                >
+                  <option value="svc">Support Vector Machine (SVC)</option>
+                  <option value="nb">Naive Bayes (NB)</option>
+                  <option value="rf">Random Forest (RF)</option>
+                </select>
+             </div>
 
-          <button
-            onClick={() => {
-              setText("");
-              setResult(null);
-            }}
-            className="text-sm text-gray-500 hover:text-white transition-colors"
-          >
-            Clear
-          </button>
+            <div className="flex gap-2 w-full sm:w-auto justify-end">
+                 <button
+                    onClick={() => {
+                      setText("");
+                      setResult(null);
+                    }}
+                    className="flex-1 sm:flex-none text-sm text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
+                  >
+                    Clear
+                  </button>
+                  
+                  <button
+                    onClick={handleCheck}
+                    disabled={loading || !text}
+                    className={cn(
+                      "flex-1 sm:flex-none px-6 py-2 rounded-lg bg-blue-600/90 hover:bg-blue-600 text-white font-medium shadow-lg shadow-blue-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2",
+                      loading && "opacity-80"
+                    )}
+                  >
+                    {loading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Analyze"
+                    )}
+                  </button>
+            </div>
         </div>
       </div>
 

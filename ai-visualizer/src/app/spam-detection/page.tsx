@@ -103,7 +103,7 @@ export default function SpamDetectionPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         {/* Left Col: Interactive */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}

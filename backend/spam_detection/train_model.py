@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
 import string
 import nltk
 from nltk.corpus import stopwords
@@ -45,21 +46,32 @@ try:
     X = tfidf.fit_transform(df['clean_text']).toarray()
     y = df['label'].map({'Spam': 1, 'Ham': 0})
 
-    # Train Model (Using LinearSVC for speed, wrapped for probabilities)
-    print("Training Model (LinearSVC)...")
-    # LinearSVC is much faster than SVC(kernel='linear') for large datasets
-    linear_svc = LinearSVC(dual=False) # dual=False is preferred when n_samples > n_features
-    model = CalibratedClassifierCV(linear_svc) 
-    model.fit(X, y)
-
-    # Save Artifacts
-    print("Saving artifacts...")
     artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
     os.makedirs(artifacts_dir, exist_ok=True)
-    joblib.dump(model, os.path.join(artifacts_dir, 'model.pkl'))
+
+    # 1. LinearSVC
+    print("Training Model (LinearSVC)...")
+    linear_svc = LinearSVC(dual=False)
+    model_svc = CalibratedClassifierCV(linear_svc) 
+    model_svc.fit(X, y)
+    joblib.dump(model_svc, os.path.join(artifacts_dir, 'model_svc.pkl'))
+
+    # 2. Naive Bayes
+    print("Training Model (Naive Bayes)...")
+    model_nb = MultinomialNB()
+    model_nb.fit(X, y)
+    joblib.dump(model_nb, os.path.join(artifacts_dir, 'model_nb.pkl'))
+
+    # 3. Random Forest
+    print("Training Model (Random Forest)...")
+    model_rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+    model_rf.fit(X, y)
+    joblib.dump(model_rf, os.path.join(artifacts_dir, 'model_rf.pkl'))
+
+    # Save Vectorizer
     joblib.dump(tfidf, os.path.join(artifacts_dir, 'vectorizer.pkl'))
 
-    print(f"Done! Model and Vectorizer saved to {artifacts_dir}")
+    print(f"Done! Models (svc, nb, rf) and Vectorizer saved to {artifacts_dir}")
 
 except Exception as e:
     print(f"An error occurred: {e}")

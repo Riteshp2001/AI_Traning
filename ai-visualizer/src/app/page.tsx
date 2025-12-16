@@ -17,25 +17,24 @@ const projects = [
     color: "from-blue-500 to-cyan-400",
   },
   {
+    id: "churn-prediction",
+    title: "Customer Churn Prediction",
+    description: "Analyze customer data to predict churn using Random Forest and Logistic Regression.",
+    icon: Activity,
+    href: "/churn",
+    status: "Live",
+    color: "from-purple-500 to-pink-400",
+  },
+  {
     id: "sentiment-analysis",
     title: "Sentiment Analysis",
     description:
       "Analyze customer reviews and feedback to determine underlying sentiment.",
-    icon: Activity,
-    href: "/upcoming",
-    status: "Coming Soon",
-    color: "from-purple-500 to-pink-400",
-  },
-  {
-    id: "image-recognition",
-    title: "Image Recognition",
-    description:
-      "Identify objects and faces in images with high precision using CNNs.",
     icon: Zap,
     href: "/upcoming",
     status: "Coming Soon",
     color: "from-amber-500 to-orange-400",
-  },
+  }
 ];
 
 export default function Home() {
@@ -47,7 +46,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl font-bold mb-2"
         >
-          Welcome Back, User
+          Welcome Back
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -74,7 +73,7 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 + 0.2 }}
               whileHover={{ y: -5, scale: 1.02 }}
-              className="group relative p-6 rounded-2xl glass-panel h-full border border-white/5 bg-linear-to-br from-white/5 to-transparent overflow-hidden"
+              className="flex flex-col justify-between p-6 rounded-2xl glass-panel h-full border border-white/5 bg-linear-to-br from-white/5 to-transparent overflow-hidden"
             >
               <div
                 className={cn(

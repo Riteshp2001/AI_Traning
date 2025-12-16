@@ -48,3 +48,12 @@
 .gradient-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600;
 }
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
